@@ -28,7 +28,19 @@ Read first: `docs/vision.md`, `docs/styleguide.md`. Decisions: `docs/adr/`.
    ```
 
 5. An issue is closed only when its "Done when" holds. If it can't hold yet, leave it open and
-   say what it waits on.
+   say what it waits on. An issue handed to someone outside the lane (a reviewer) closes once
+   they have acted, not when it is sent.
+
+## What every issue carries
+
+Set by the human at the morning-digest split (29 Oct). `plan-to-issues` reads this instead of
+asking again; a change to it is the human's call.
+
+- First line: `Source: plan.md § <n>`, the plan section it came from (`§ 1`, `§ 2a`).
+- Label: `plan:<plan>`, the `plan:` name from the plan's frontmatter (`plan:morning-digest`).
+- Then these headings, in this order: `## Scope`, `## Done when` (one checkable condition),
+  `## Blocked by` (`#n`, or `—`), `## Worker (planned)` (`<harness> · <model> · <effort>`).
+- Closed with the closing comment above.
 
 ## Skills
 
