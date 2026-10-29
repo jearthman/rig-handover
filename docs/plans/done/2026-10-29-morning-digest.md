@@ -1,8 +1,9 @@
 ---
 plan: morning-digest
-status: ready
+status: done
 owner: rook
 opened: 2026-10-29
+closed: 2026-10-29
 ---
 
 # Morning digest
@@ -77,3 +78,21 @@ page again with `LANE_MARKER` unset (the banner reads "no marker set") and uploa
 link. Move this plan to `docs/plans/done/` with its issue list.
 
 Done when: the preview link no longer shows the lane marker.
+
+## Issues
+
+| # | Issue | Blocked by | Worker | Closed |
+|---|-------|-----------|--------|--------|
+| 1 | Digest types: `DigestRow` and `readNight` signature | — | claude-code · opus-5.5 · xhigh | 2026-10-29 |
+| 2 | Run log reader: `readNight` | #1 | claude-code · opus-5.5 · medium | 2026-10-29 |
+| 3 | Digest page: `GET /digest/:night` | #1 | claude-code · sonnet-5.5 · low | 2026-10-29 |
+| 4 | Digest JSON: `GET /api/digest/:night` | #1 | claude-code · haiku-5.5 · low | 2026-10-29 |
+| 5 | Board link: each night to its digest, with counts | #1 | claude-code · sonnet-5.5 · low | 2026-10-29 |
+| 6 | Route tests: digest page and JSON | #1 | claude-code · haiku-5.5 · medium | 2026-10-29 |
+| 7 | Preview for review | #2–#6 | claude-code · opus-5.5 · xhigh | 2026-10-29 |
+| 8 | Clean up: take the marker off the preview | #7, the review | claude-code · opus-5.5 · xhigh | 2026-10-29 |
+
+#3 and #4 ran in parallel and both added the `readNight` import; merging them left it twice
+(fixed in aeaba95). #7 was first closed when the link went out and reopened: a preview
+issue closes when the reviewer has looked, not when the link is sent. The preview lost its
+marker the same day, after the review (#8).
