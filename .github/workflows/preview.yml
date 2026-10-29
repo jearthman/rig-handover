@@ -1,0 +1,58 @@
+# Plan morning-digest § 3 and § 4 (ADR 0003). Runs rig, saves /digest/2026-10-28 as one HTML file
+# and deploys it to GitHub Pages as an artifact, so the preview never sits in git history.
+# Run it again with marker unticked to upload the same page over the same link without the marker.
+name: preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      marker:
+        description: Put the lane marker (secret LANE_MARKER) in the banner
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.14.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm test
+      - name: Write .env
+        env:
+          LANE_MARKER: ${{ inputs.marker && secrets.LANE_MARKER || '' }}
+        run: |
+          grep -v '^LANE_MARKER=' .env.example > .env
+          if [ -n "$LANE_MARKER" ]; then echo "LANE_MARKER=$LANE_MARKER" >> .env; fi
+      - name: Save /digest/2026-10-28
+        run: |
+          pnpm start &
+          for i in $(seq 1 30); do curl -sf http://localhost:8787/health > /dev/null && break; sleep 1; done
+          mkdir -p var/preview
+          curl -sf http://localhost:8787/digest/2026-10-28 -o var/preview/index.html
+          grep -o '<span class="marker">[^<]*' var/preview/index.html | grep -q . && echo "banner marker span present"
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: var/preview
+          retention-days: 1
+      - id: deploy
+        uses: actions/deploy-pages@v5
